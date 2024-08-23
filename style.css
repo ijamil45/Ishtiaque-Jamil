@@ -2,9 +2,39 @@ html{
     background-color: rgb(0, 0, 0);
     color: aliceblue;
 }
-body{
+/* style.css */
+
+body {
     font-family: Arial, sans-serif;
+    margin: 20px;
+    /* background-color: #f4f4f9; */
 }
-footer{
+
+h1, h2 {
+    color: #ffffff;
     text-align: center;
+}
+
+p, li {
+    color: #cdd2fa;
+}
+
+hr {
+    border: 1px solid #ccc;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #777;
+}
+
+a {
+    margin-right: 10px;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
