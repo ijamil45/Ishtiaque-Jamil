@@ -37,7 +37,9 @@ a {
     color: #007bf7;
     text-decoration: none;
 }
-
+nav {
+    text-align: center;
+}
 a:hover {
     text-decoration: underline;
 }
