@@ -1,45 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Resume</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video → MP3 Converter (Legal Demo)</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="card">
+    <h1>Video → MP3 Converter</h1>
+    <p>Educational demo (upload-based, legal)</p>
 
-    <nav class="navbar">
-        <a href="index.html">Home</a>
-        <a href="./About/index.html">About</a>
-        <a href="./Contact/index.html">Contact</a>
-    </nav>
+    <input type="file" id="videoFile" accept="video/*" />
 
-    <div class="container">
-        <h1>Hi 👋<br>I'm <span>Ishtiaque Jamil</span></h1>
+    <select id="bitrate">
+      <option value="128">128 kbps</option>
+      <option value="192">192 kbps</option>
+      <option value="320">320 kbps</option>
+    </select>
 
-        <p class="intro">
-            This is my website. As you can see it's kind of in the kitchen 🍳  
-            Wait for it to cook.
-        </p>
+    <button id="convertBtn">Convert to MP3</button>
 
-        <section>
-            <h2>Work Experience</h2>
-            <ul>
-                <li>My only experience is making this website.</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>Skills</h2>
-            <ul>
-                <li>I really doubt if I have any.</li>
-            </ul>
-        </section>
+    <div class="progress">
+      <div class="bar" id="progressBar"></div>
     </div>
 
-    <footer>
-        <p>© 2024 Jamil</p>
-    </footer>
+    <a id="download" style="display:none"></a>
 
+    <div class="note">
+      This demo does NOT download from YouTube.<br />
+      Only convert files you own or have permission to use.
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/ffmpeg.min.js"></script>
+  <script>
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    const ffmpeg = createFFmpeg({ log: false });
+
+    const fileInput = document.getElementById('videoFile');
+    const convertBtn = document.getElementById('convertBtn');
+    const progressBox = document.querySelector('.progress');
+    const bar = document.getElementById('progressBar');
+    const download = document.getElementById('download');
+
+    convertBtn.onclick = async () => {
+      if (!fileInput.files.length) return alert('Select a video file first');
+
+      convertBtn.disabled = true;
+      progressBox.style.display = 'block';
+      bar.style.width = '10%';
+
+      if (!ffmpeg.isLoaded()) await ffmpeg.load();
+
+      const file = fileInput.files[0];
+      const bitrate = document.getElementById('bitrate').value;
+
+      ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
+
+      bar.style.width = '40%';
+
+      await ffmpeg.run('-i', 'input.mp4', '-b:a', bitrate + 'k', 'output.mp3');
+
+      bar.style.width = '80%';
+
+      const data = ffmpeg.FS('readFile', 'output.mp3');
+      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'audio/mp3' }));
+
+      download.href = url;
+      download.download = file.name.replace(/\.[^/.]+$/, '') + '.mp3';
+      download.style.display = 'block';
+      download.textContent = 'Download MP3';
+
+      bar.style.width = '100%';
+      convertBtn.disabled = false;
+    };
+  </script>
 </body>
 </html>
